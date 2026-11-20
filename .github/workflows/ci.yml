@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  check:
+    name: Format, analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      # The core library and its tests need no MAUI workload.
+      - run: dotnet restore tests/MauiWeather.Core.Tests
+      - run: dotnet format tests/MauiWeather.Core.Tests --verify-no-changes --no-restore
+      - run: dotnet format src/MauiWeather.Core --verify-no-changes --no-restore
+      # The .NET analyzers run as part of the build; any warning fails it
+      # (see Directory.Build.props).
+      - run: dotnet test tests/MauiWeather.Core.Tests --no-restore
+
+  build-android:
+    name: Analyze and build Android APK
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: dotnet workload install maui-android
+      - run: dotnet restore src/MauiWeather
+      - run: dotnet format src/MauiWeather --verify-no-changes --no-restore
+      - run: dotnet build src/MauiWeather -f net10.0-android -c Debug --no-restore
+      - uses: actions/upload-artifact@v7
+        with:
+          name: maui-weather-debug-apk
+          path: src/MauiWeather/bin/Debug/net10.0-android/*-Signed.apk
+          retention-days: 14

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MauiWeather.Core/MauiWeather.Core.csproj" />
+    <Project Path="src/MauiWeather/MauiWeather.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MauiWeather.Core.Tests/MauiWeather.Core.Tests.csproj" />
+  </Folder>
+</Solution>
