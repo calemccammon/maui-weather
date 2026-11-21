@@ -1,0 +1,51 @@
+@* The app's one screen: a map, a search bar over it, and the forecast for
+   the selected place.
+
+   On a phone the forecast is a bottom sheet that drags up over the map.
+   From Material's "expanded" window width up, it is a panel at the side.
+   HomePage.razor.cs decides which, and tells the map what covers it. *@
+
+<PageTitle>@Strings.AppTitle</PageTitle>
+
+<main class="screen">
+    @if (_window is WindowSize window)
+    {
+        <WeatherMap Place="Home.Place"
+                    Covered="Covered(window)"
+                    IsDark="window.IsDark"
+                    OnPointPicked="point => Home.SelectPoint(point.Latitude, point.Longitude)" />
+
+        @if (IsWide(window))
+        {
+            @* The sheet's look, rounded on every corner since it floats
+               clear of the window's edges. *@
+            <section class="side-panel">
+                <ForecastPanel Home="Home" />
+            </section>
+        }
+        else
+        {
+            <BottomSheet RestingHeight="SheetRestingHeight(window)" ExpandedHeight="SheetExpandedHeight(window)">
+                <div class="in-sheet">
+                    <ForecastPanel Home="Home" />
+                </div>
+            </BottomSheet>
+        }
+
+        @if (_isSearchOpen)
+        {
+            @* A press anywhere else closes the search results. This is for a
+               finger or a mouse only: from the keyboard, Escape in the
+               search bar does it. *@
+            <div class="scrim" aria-hidden="true" @onclick="() => _isSearchOpen = false"></div>
+        }
+
+        @* Last, so its results lie over everything else. *@
+        <div class="search @(IsWide(window) ? "wide" : null)">
+            <PlaceSearchBar PlaceTitle="@Home.Place?.Title"
+                            Search="Search"
+                            @bind-IsOpen="_isSearchOpen"
+                            OnClearPlace="Home.Clear" />
+        </div>
+    }
+</main>

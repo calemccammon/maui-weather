@@ -1,0 +1,9 @@
+@* One of the icons in Glyphs. It is decoration: a screen reader skips it,
+   and whatever it sits in says what it means. *@
+<span class="icon" aria-hidden="true">@Glyph</span>
+
+@code {
+    /// <summary>A character of the icon font, from <see cref="Glyphs"/>.</summary>
+    [Parameter, EditorRequired]
+    public required string Glyph { get; set; }
+}

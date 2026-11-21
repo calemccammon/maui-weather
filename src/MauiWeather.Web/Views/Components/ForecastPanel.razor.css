@@ -1,0 +1,212 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--panel-padding, var(--space-xl));
+  overflow-y: auto;
+  color: var(--color-on-surface);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+h2,
+.title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.muted {
+  font-size: 0.875rem;
+  color: var(--color-on-surface-variant);
+}
+
+.current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.temperature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  font-size: 2.8125rem;
+}
+
+.temperature ::deep .icon {
+  font-size: 56px;
+  color: var(--color-primary);
+}
+
+.week-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+  margin-top: var(--space-sm);
+}
+
+/* The units choice: two halves of one outlined pill. */
+.units {
+  display: flex;
+  border: 1px solid var(--color-outline);
+  border-radius: var(--shape-extra-large);
+  overflow: hidden;
+}
+
+.units button {
+  width: 80px;
+  height: var(--min-touch-target);
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.units button + button {
+  border-left: 1px solid var(--color-outline);
+}
+
+.units button[aria-pressed='true'] {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+
+.week {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-sm) 0;
+  border-radius: var(--shape-medium);
+  background: var(--color-surface-container-highest);
+}
+
+.week li {
+  /* Column widths are in text units, so they grow with the reader's text
+     size and nothing wraps: room for "Today", "100%" and "-88°". */
+  display: grid;
+  grid-template-columns: 3.5rem 1.5rem 2.75rem 2.25rem minmax(0, 1fr) 2.25rem;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  white-space: nowrap;
+}
+
+.week ::deep .icon {
+  color: var(--color-primary);
+}
+
+.chance {
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--color-tertiary);
+}
+
+.low,
+.high {
+  text-align: end;
+}
+
+.low {
+  color: var(--color-on-surface-variant);
+}
+
+/* A track for the week's whole temperature range with one day's part of it
+   filled in, from --start to --end (each 0 to 1). */
+.bar {
+  --thickness: 6px;
+  /* Never thinner than the bar is tall, or a day whose low and high match
+     would vanish. */
+  --fill: max(var(--thickness), calc((var(--end) - var(--start)) * 100%));
+
+  position: relative;
+  height: var(--thickness);
+  margin: 0 var(--space-md) 0 var(--space-sm);
+  border-radius: calc(var(--thickness) / 2);
+  background: var(--color-surface);
+}
+
+.bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* And never pushed off the end of the track. */
+  left: min(calc(var(--start) * 100%), calc(100% - var(--fill)));
+  width: var(--fill);
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+
+.credit {
+  font-size: 0.6875rem;
+  color: var(--color-on-surface-variant);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-lg);
+}
+
+.status .progress {
+  align-self: stretch;
+  margin: var(--space-xl) 0;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.hint {
+  color: var(--color-primary);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.hint,
+.error {
+  display: flex;
+}
+
+.tonal-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: var(--min-touch-target);
+  padding: 0 var(--space-xl) 0 var(--space-lg);
+  border: 0;
+  border-radius: var(--shape-extra-large);
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tonal-button ::deep .icon {
+  font-size: 18px;
+}
+
+.units button:focus-visible,
+.tonal-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}

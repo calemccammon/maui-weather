@@ -1,0 +1,55 @@
+name: Deploy to GitHub Pages
+
+# Publishes the Blazor web app. Runs only when started by hand from the
+# Actions tab.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+        with:
+          enablement: true
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - run: dotnet publish src/MauiWeather.Web -c Release -o publish
+      # Pages serves the site from /maui-weather/, not from the root. The
+      # compressed copies of the page made before this change are dropped.
+      - run: |
+          sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' publish/wwwroot/index.html
+          grep -q '<base href="/${{ github.event.repository.name }}/" />' publish/wwwroot/index.html
+          rm -f publish/wwwroot/index.html.br publish/wwwroot/index.html.gz
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: publish/wwwroot
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

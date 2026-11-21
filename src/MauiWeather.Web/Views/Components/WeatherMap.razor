@@ -1,0 +1,86 @@
+@* The map behind everything else, drawn with MapLibre GL JS by
+   wwwroot/js/weatherMap.js. A press held in one spot picks the point
+   under it. *@
+@implements IAsyncDisposable
+@inject IJSRuntime JavaScript
+
+<div @ref="_container"
+     class="map"
+     role="application"
+     aria-label="@Strings.MapLabel"
+     style="--covered-bottom: @Css.Pixels(Covered.Bottom)"></div>
+
+@code {
+    private ElementReference _container;
+    private DotNetObjectReference<WeatherMap>? _listener;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _map;
+
+    /// <summary>What the map was last told to show.</summary>
+    private (MapPoint? Pin, MapInsets Covered, bool IsDark)? _shown;
+
+    /// <summary>Where the pin goes, or null for no pin.</summary>
+    [Parameter]
+    public PlaceUiModel? Place { get; set; }
+
+    /// <summary>
+    /// The parts of the map the search bar and forecast cover. The pin is
+    /// put in the middle of what is left, and the map's credit above them.
+    /// </summary>
+    [Parameter]
+    public MapInsets Covered { get; set; }
+
+    [Parameter]
+    public bool IsDark { get; set; }
+
+    /// <summary>A press-and-hold on the map, at the point under it.</summary>
+    [Parameter]
+    public EventCallback<MapPoint> OnPointPicked { get; set; }
+
+    /// <summary>Called by the map's JavaScript.</summary>
+    [JSInvokable]
+    public Task OnLongPress(double latitude, double longitude)
+    {
+        return OnPointPicked.InvokeAsync(new MapPoint(latitude, longitude));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_map is not null)
+        {
+            await _map.InvokeVoidAsync("dispose");
+            await _map.DisposeAsync();
+        }
+
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+
+        _listener?.Dispose();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _listener = DotNetObjectReference.Create(this);
+            _module = await JavaScript.InvokeAsync<IJSObjectReference>("import", "./js/weatherMap.js");
+            _map = await _module.InvokeAsync<IJSObjectReference>("create", _container, _listener, IsDark);
+        }
+
+        // A render that comes while the map is still being made leaves the
+        // first one to show what there is by then.
+        if (_map is null)
+        {
+            return;
+        }
+
+        MapPoint? pin = Place is null ? null : new MapPoint(Place.Latitude, Place.Longitude);
+        if (_shown != (pin, Covered, IsDark))
+        {
+            _shown = (pin, Covered, IsDark);
+            await _map.InvokeVoidAsync("show", pin, Covered, IsDark);
+        }
+    }
+}

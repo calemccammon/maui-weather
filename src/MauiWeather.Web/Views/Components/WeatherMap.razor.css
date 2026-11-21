@@ -1,0 +1,25 @@
+.map {
+  position: absolute;
+  inset: 0;
+  /* The map's own layers stay under everything drawn after it. */
+  isolation: isolate;
+}
+
+/* The credit the map's makers ask for, kept clear of what covers the map's
+   bottom edge. */
+.map ::deep .maplibregl-ctrl-bottom-right {
+  bottom: var(--covered-bottom);
+}
+
+.map ::deep .maplibregl-ctrl-attrib {
+  margin: var(--space-sm);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: var(--shape-extra-small);
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  color: var(--color-on-surface);
+  font-size: 0.6875rem;
+}
+
+.map ::deep .maplibregl-ctrl-attrib a {
+  color: inherit;
+}

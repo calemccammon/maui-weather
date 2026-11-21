@@ -1,0 +1,118 @@
+@* A sheet that rests over the bottom of the screen and is pulled up by its
+   handle. HTML has no bottom sheet of its own. *@
+@inject Browser Browser
+
+<section class="sheet @(_dragged is null ? null : "dragging")"
+         style="height: @Css.Pixels(ExpandedHeight); transform: translateY(@Css.Pixels(Offset))">
+    <button @ref="_handle"
+            class="handle"
+            type="button"
+            aria-label="@(_isExpanded ? Strings.ForecastCollapse : Strings.ForecastExpand)"
+            aria-expanded="@(_isExpanded ? "true" : "false")"
+            @onpointerdown="OnPointerDown"
+            @onpointermove="OnPointerMove"
+            @onpointerup="OnPointerUp"
+            @onpointercancel="OnPointerUp"
+            @onclick="OnClick">
+        <span class="grip"></span>
+    </button>
+    <div class="body">
+        @ChildContent
+    </div>
+</section>
+
+@code {
+    /// <summary>A drag has to carry the sheet this far towards the other stop to take it there.</summary>
+    private const double SnapFraction = 0.25;
+
+    /// <summary>A press that moves less than this is a press, not a drag.</summary>
+    private const double PressSlop = 4;
+
+    private ElementReference _handle;
+    private bool _isExpanded;
+
+    /// <summary>How far the sheet has been dragged down from its stop, while a drag is under way.</summary>
+    private double? _dragged;
+
+    private double _dragStartY;
+
+    /// <summary>Whether the press now ending moved the sheet, so is not also a press of the handle.</summary>
+    private bool _wasDragged;
+
+    /// <summary>How much of the sheet shows while it is at rest, in pixels.</summary>
+    [Parameter, EditorRequired]
+    public double RestingHeight { get; set; }
+
+    /// <summary>How tall the sheet is when it is pulled right up, in pixels.</summary>
+    [Parameter, EditorRequired]
+    public double ExpandedHeight { get; set; }
+
+    /// <summary>What the sheet holds, under its handle.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// The sheet is always as tall as it gets; at rest it is pushed down so
+    /// that only its top shows. This is how far.
+    /// </summary>
+    private double RestingOffset => Math.Max(0, ExpandedHeight - RestingHeight);
+
+    private double Stop => _isExpanded ? 0 : RestingOffset;
+
+    private double Offset => _dragged is double dragged ? Math.Clamp(Stop + dragged, 0, RestingOffset) : Stop;
+
+    private async Task OnPointerDown(PointerEventArgs e)
+    {
+        _dragStartY = e.ClientY;
+        _dragged = 0;
+        _wasDragged = false;
+        await Browser.CapturePointerAsync(_handle, e.PointerId);
+    }
+
+    private void OnPointerMove(PointerEventArgs e)
+    {
+        if (_dragged is not null)
+        {
+            _dragged = e.ClientY - _dragStartY;
+        }
+    }
+
+    private void OnPointerUp()
+    {
+        if (_dragged is not double moved)
+        {
+            return;
+        }
+
+        _dragged = null;
+        if (Math.Abs(moved) < PressSlop)
+        {
+            // A press: the click that follows moves the sheet.
+            return;
+        }
+
+        _wasDragged = true;
+        double enough = RestingOffset * SnapFraction;
+        if (_isExpanded && moved > enough)
+        {
+            _isExpanded = false;
+        }
+        else if (!_isExpanded && moved < -enough)
+        {
+            _isExpanded = true;
+        }
+    }
+
+    /// <summary>A press of the handle, or its key, moves the sheet to its other stop.</summary>
+    private void OnClick(MouseEventArgs e)
+    {
+        // The browser may send a click at the end of a drag too. A click
+        // from the keyboard has no press before it, and always counts.
+        bool endsDrag = _wasDragged && e.Detail != 0;
+        _wasDragged = false;
+        if (!endsDrag)
+        {
+            _isExpanded = !_isExpanded;
+        }
+    }
+}

@@ -1,0 +1,128 @@
+.bar {
+  border-radius: var(--shape-extra-large);
+  background: var(--color-surface-container-high);
+  box-shadow: var(--elevation-3);
+  color: var(--color-on-surface);
+  overflow: hidden;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  height: var(--search-bar-height);
+  padding: 0 var(--space-xs) 0 var(--space-lg);
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+}
+
+input::placeholder {
+  color: var(--color-on-surface-variant);
+}
+
+/* The browser's own clear button: the bar has its own. */
+input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.icon-button {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--min-touch-target);
+  height: var(--min-touch-target);
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.results {
+  border-top: 1px solid var(--color-outline);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-sm);
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px var(--space-lg);
+  border: 0;
+  background: none;
+  text-align: start;
+  cursor: pointer;
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.muted {
+  font-size: 0.875rem;
+  color: var(--color-on-surface-variant);
+}
+
+.status {
+  min-height: 4px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-xs) var(--space-md) var(--space-lg);
+  color: var(--color-on-surface-variant);
+}
+
+.message span {
+  flex: 1;
+}
+
+.text-button {
+  flex: none;
+  min-height: var(--min-touch-target);
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--shape-extra-large);
+  background: none;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.icon-button:hover,
+.result:hover,
+.text-button:hover {
+  background: color-mix(in srgb, var(--color-on-surface) 8%, transparent);
+}
+
+.icon-button:focus-visible,
+.result:focus-visible,
+.text-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}

@@ -4,6 +4,7 @@
     <Project Path="src/MauiWeather.Data/MauiWeather.Data.csproj" />
     <Project Path="src/MauiWeather.Presentation/MauiWeather.Presentation.csproj" />
     <Project Path="src/MauiWeather/MauiWeather.csproj" />
+    <Project Path="src/MauiWeather.Web/MauiWeather.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MauiWeather.Tests/MauiWeather.Tests.csproj" />
