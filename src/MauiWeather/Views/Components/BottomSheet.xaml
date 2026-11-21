@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- A sheet that rests over the bottom of the screen and is pulled up by its
+     handle. MAUI has no bottom sheet of its own. -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiWeather.Views.Components.BottomSheet"
+             VerticalOptions="End">
+    <!-- Said in full: what is put inside a BottomSheet elsewhere goes under
+         the handle, so the sheet's own look has to be named as its content. -->
+    <ContentView.Content>
+    <Border Style="{StaticResource Panel}" StrokeShape="{StaticResource ShapeSheet}">
+        <Grid RowDefinitions="48,*">
+            <!-- The handle: drag it, or press it, to move the sheet. -->
+            <Grid x:Name="Handle" BackgroundColor="Transparent">
+                <Grid.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnHandlePanned" />
+                    <TapGestureRecognizer Tapped="OnHandleTapped" />
+                </Grid.GestureRecognizers>
+                <BoxView WidthRequest="32"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Opacity="0.4"
+                         Color="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+            </Grid>
+            <ContentView x:Name="Body" Grid.Row="1" />
+        </Grid>
+    </Border>
+    </ContentView.Content>
+</ContentView>

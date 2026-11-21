@@ -392,3 +392,7 @@ dotnet_naming_style.s_camelcase.capitalization = camel_case
 # Rules turned down here are style nits that the MAUI template itself trips.
 [*.cs]
 dotnet_diagnostic.CA1805.severity = suggestion
+
+# Tests are named as sentences, with underscores for the spaces.
+[tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Current conditions and the week ahead for the selected place. It scrolls,
+     so it can live inside the bottom sheet or the side panel. -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:MauiWeather.Views.Components"
+             xmlns:core="clr-namespace:MauiWeather.Presentation.Core;assembly=MauiWeather.Presentation"
+             xmlns:models="clr-namespace:MauiWeather.Presentation.Home.Models;assembly=MauiWeather.Presentation"
+             xmlns:strings="clr-namespace:MauiWeather.Presentation.Resources;assembly=MauiWeather.Presentation"
+             xmlns:viewModels="clr-namespace:MauiWeather.Presentation.Home.ViewModels;assembly=MauiWeather.Presentation"
+             x:Class="MauiWeather.Views.Components.ForecastPanel"
+             x:DataType="viewModels:HomeViewModel">
+    <ScrollView>
+        <VerticalStackLayout x:Name="Stack" Spacing="{StaticResource SpaceLg}">
+
+            <VerticalStackLayout IsVisible="{Binding HasPlace}">
+                <Label Text="{Binding Place.Title}"
+                       Style="{StaticResource HeadlineSmall}"
+                       SemanticProperties.HeadingLevel="Level1" />
+                <Label Text="{Binding Place.Subtitle}"
+                       IsVisible="{Binding Place.HasSubtitle}"
+                       Style="{StaticResource BodyMediumMuted}" />
+            </VerticalStackLayout>
+
+            <!-- No place selected: how to select one. -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpaceLg}" IsVisible="False">
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid" Binding="{Binding HasPlace}" Value="False">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Grid.Triggers>
+                <Label Text="{x:Static core:Glyphs.TouchApp}"
+                       Style="{StaticResource Icon}"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                <Label Grid.Column="1" Text="{x:Static strings:Strings.ForecastHint}" Style="{StaticResource BodyLarge}" />
+            </Grid>
+
+            <ActivityIndicator IsVisible="{Binding IsLoading}"
+                               IsRunning="{Binding IsLoading}"
+                               HorizontalOptions="Start"
+                               Margin="0,24"
+                               SemanticProperties.Description="{x:Static strings:Strings.ForecastLoading}" />
+
+            <VerticalStackLayout IsVisible="{Binding HasFailed}" Spacing="{StaticResource SpaceLg}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpaceLg}">
+                    <Label Text="{x:Static core:Glyphs.CloudOff}"
+                           Style="{StaticResource Icon}"
+                           TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
+                    <Label Grid.Column="1" Text="{Binding FailureMessage}" Style="{StaticResource BodyLarge}" />
+                </Grid>
+                <Button Text="{x:Static strings:Strings.TryAgain}"
+                        Command="{Binding RetryForecastCommand}"
+                        Style="{StaticResource TonalButton}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding HasForecast}" Spacing="{StaticResource SpaceLg}">
+
+                <!-- Read out as one sentence. -->
+                <ContentView SemanticProperties.Description="{Binding Forecast.Current.Description}">
+                    <Grid ColumnDefinitions="Auto,Auto,*"
+                          ColumnSpacing="{StaticResource SpaceLg}"
+                          AutomationProperties.ExcludedWithChildren="True">
+                        <Label Text="{Binding Forecast.Current.Icon}"
+                               Style="{StaticResource Icon}"
+                               FontSize="56"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding Forecast.Current.Temperature}"
+                               Style="{StaticResource DisplayMedium}"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                            <Label Text="{Binding Forecast.Current.Condition}" Style="{StaticResource TitleMedium}" />
+                            <Label Text="{Binding Forecast.Current.FeelsLike}" Style="{StaticResource BodyMediumMuted}" />
+                            <Label Text="{Binding Forecast.Current.Wind}" Style="{StaticResource BodyMediumMuted}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </ContentView>
+
+                <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                    <Label Text="{x:Static strings:Strings.ForecastThisWeek}"
+                           Style="{StaticResource TitleMedium}"
+                           VerticalOptions="Center"
+                           SemanticProperties.HeadingLevel="Level2" />
+
+                    <!-- The units choice: two halves of one outlined pill. -->
+                    <Border Grid.Column="1"
+                            Stroke="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}"
+                            StrokeThickness="1"
+                            StrokeShape="{StaticResource ShapeExtraLarge}"
+                            SemanticProperties.Description="{x:Static strings:Strings.UnitsLabel}">
+                        <HorizontalStackLayout>
+                            <Button Text="{x:Static strings:Strings.UnitsCelsius}"
+                                    Command="{Binding SetUnitsCommand}"
+                                    CommandParameter="{x:Static models:UnitsUiModel.Celsius}"
+                                    Style="{StaticResource UnitsButton}"
+                                    SemanticProperties.Description="{x:Static strings:Strings.UnitsCelsiusName}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding Units}" Value="{x:Static models:UnitsUiModel.Celsius}">
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SecondaryContainerLight}, Dark={StaticResource SecondaryContainerDark}}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Text="{x:Static strings:Strings.UnitsFahrenheit}"
+                                    Command="{Binding SetUnitsCommand}"
+                                    CommandParameter="{x:Static models:UnitsUiModel.Fahrenheit}"
+                                    Style="{StaticResource UnitsButton}"
+                                    SemanticProperties.Description="{x:Static strings:Strings.UnitsFahrenheitName}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding Units}" Value="{x:Static models:UnitsUiModel.Fahrenheit}">
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SecondaryContainerLight}, Dark={StaticResource SecondaryContainerDark}}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Label Text="{x:Static strings:Strings.ForecastNoDays}" Style="{StaticResource BodyMedium}" IsVisible="False">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding Forecast.HasDays}" Value="False">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+
+                <Border IsVisible="{Binding Forecast.HasDays}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHighestLight}, Dark={StaticResource SurfaceContainerHighestDark}}"
+                        StrokeThickness="0"
+                        StrokeShape="{StaticResource ShapeMedium}"
+                        Padding="0,8">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Forecast.Days}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:DayUiModel">
+                                <!-- Read out as one sentence. The columns are
+                                     wide enough for "Today", "100%" and "-88°". -->
+                                <ContentView SemanticProperties.Description="{Binding Description}">
+                                    <Grid ColumnDefinitions="64,24,48,44,*,44"
+                                          Padding="16,8"
+                                          AutomationProperties.ExcludedWithChildren="True">
+                                        <Label Text="{Binding DayLabel}" Style="{StaticResource BodyLarge}" LineBreakMode="NoWrap" VerticalOptions="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Icon}"
+                                               Style="{StaticResource Icon}"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        <Label Grid.Column="2"
+                                               Text="{Binding Chance}"
+                                               Style="{StaticResource LabelMedium}"
+                                               TextColor="{AppThemeBinding Light={StaticResource TertiaryLight}, Dark={StaticResource TertiaryDark}}"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="NoWrap"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Column="3"
+                                               Text="{Binding Low}"
+                                               Style="{StaticResource BodyLarge}"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                               HorizontalTextAlignment="End"
+                                               LineBreakMode="NoWrap"
+                                               VerticalOptions="Center" />
+                                        <components:RangeBar Grid.Column="4"
+                                                             Start="{Binding BarStart}"
+                                                             End="{Binding BarEnd}"
+                                                             Margin="8,0,12,0"
+                                                             TrackColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                                                             FillColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        <Label Grid.Column="5"
+                                               Text="{Binding High}"
+                                               Style="{StaticResource BodyLarge}"
+                                               HorizontalTextAlignment="End"
+                                               LineBreakMode="NoWrap"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </ContentView>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="{x:Static strings:Strings.ForecastCredit}" Style="{StaticResource LabelSmall}"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariantLight}, Dark={StaticResource OnSurfaceVariantDark}}" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentView>

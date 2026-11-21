@@ -27,13 +27,15 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-      # The core library and its tests need no MAUI workload.
-      - run: dotnet restore tests/MauiWeather.Core.Tests
-      - run: dotnet format tests/MauiWeather.Core.Tests --verify-no-changes --no-restore
-      - run: dotnet format src/MauiWeather.Core --verify-no-changes --no-restore
+      # The three libraries and their tests need no MAUI workload.
+      - run: dotnet restore tests/MauiWeather.Tests
+      - run: dotnet format tests/MauiWeather.Tests --verify-no-changes --no-restore
+      - run: dotnet format src/MauiWeather.Domain --verify-no-changes --no-restore
+      - run: dotnet format src/MauiWeather.Data --verify-no-changes --no-restore
+      - run: dotnet format src/MauiWeather.Presentation --verify-no-changes --no-restore
       # The .NET analyzers run as part of the build; any warning fails it
       # (see Directory.Build.props).
-      - run: dotnet test tests/MauiWeather.Core.Tests --no-restore
+      - run: dotnet test tests/MauiWeather.Tests --no-restore
 
   build-android:
     name: Analyze and build Android APK

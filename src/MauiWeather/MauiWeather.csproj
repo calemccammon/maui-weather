@@ -28,7 +28,7 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
 		<!-- Display name -->
-		<ApplicationTitle>MauiWeather</ApplicationTitle>
+		<ApplicationTitle>Weather</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.calemccammon.weather.maui</ApplicationId>
@@ -49,16 +49,12 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#2E6FB7" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#2E6FB7" BaseSize="128,128" />
 
-		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-		
-		<!-- Custom Fonts -->
+		<!-- Fonts: Google's Material Icons, for every icon the app draws. -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
@@ -66,15 +62,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Mapsui.Maui" Version="5.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="11.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\MauiWeather.Core\MauiWeather.Core.csproj" />
+	  <ProjectReference Include="..\MauiWeather.Domain\MauiWeather.Domain.csproj" />
+	  <ProjectReference Include="..\MauiWeather.Data\MauiWeather.Data.csproj" />
+	  <ProjectReference Include="..\MauiWeather.Presentation\MauiWeather.Presentation.csproj" />
 	</ItemGroup>
 
 </Project>
