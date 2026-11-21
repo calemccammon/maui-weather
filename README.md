@@ -8,6 +8,8 @@ week appears.
 The two front ends share everything beneath the views: the Blazor app was
 added without changing a line of the domain, data or presentation projects.
 
+**Live demo (the Blazor web app):** <https://calemccammon.github.io/maui-weather/>
+
 | Wide window                                                                                                 | Phone                                                                                         |
 | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | ![The app on a wide window: a side panel with the week's forecast beside the map](docs/screenshot-wide.png) | ![The app on a phone: the forecast in a bottom sheet over the map](docs/screenshot-phone.png) |
