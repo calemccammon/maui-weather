@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Weather</title>
+    <base href="/" />
+    <link rel="preload" id="webassembly" />
+    <link rel="stylesheet" href="lib/maplibre-gl/dist/maplibre-gl.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="MauiWeather.Web.styles.css" />
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Shown while the app downloads. -->
+        <div class="progress starting" role="progressbar" aria-label="Loading"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        Something went wrong.
+        <a href="." class="reload">Reload</a>
+    </div>
+
+    <script src="lib/maplibre-gl/dist/maplibre-gl.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+</body>
+
+</html>

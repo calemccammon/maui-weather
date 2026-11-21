@@ -1,0 +1,134 @@
+@* Material 3 search bar that opens into a list of matching places.
+
+   Closed, it shows the selected place's name. Open, it holds what is being
+   typed and shows what the search view model says under it. It does no
+   searching of its own. *@
+@inject Browser Browser
+
+<div class="bar">
+    <div class="field">
+        <Icon Glyph="@Glyphs.Search" />
+        <input @ref="_input"
+               type="search"
+               enterkeyhint="search"
+               autocomplete="off"
+               spellcheck="false"
+               value="@(IsOpen ? Search.Query : PlaceTitle ?? "")"
+               placeholder="@Strings.SearchHint"
+               aria-label="@Strings.SearchHint"
+               @onfocus="OnFocus"
+               @oninput="OnInput"
+               @onkeydown="OnKeyDown" />
+        @if (PlaceTitle is not null && !IsOpen)
+        {
+            <button class="icon-button" type="button" aria-label="@Strings.ClearPlace" @onclick="OnClearPlace">
+                <Icon Glyph="@Glyphs.Close" />
+            </button>
+        }
+    </div>
+
+    @if (IsOpen)
+    {
+        <div class="results">
+            @if (Search.HasResults)
+            {
+                <ul>
+                    @foreach (PlaceUiModel place in Search.Results)
+                    {
+                        <li>
+                            <button class="result" type="button" @onclick="() => Choose(place)">
+                                <Icon Glyph="@Glyphs.Place" />
+                                <span class="names">
+                                    <span>@place.Title</span>
+                                    @if (place.HasSubtitle)
+                                    {
+                                        <span class="muted">@place.Subtitle</span>
+                                    }
+                                </span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                @* What is happening is read out by a screen reader as it
+                   changes: searching, then what came of it. *@
+                <div class="status" aria-live="polite">
+                    @if (Search.IsSearching)
+                    {
+                        <div class="progress" role="progressbar" aria-label="@Strings.SearchSearching"></div>
+                    }
+                    else if (Search.Message is string message)
+                    {
+                        <div class="message">
+                            <Icon Glyph="@Search.MessageIcon" />
+                            <span>@message</span>
+                            @if (Search.HasFailed)
+                            {
+                                <button class="text-button" type="button" @onclick="Search.Retry">@Strings.TryAgain</button>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private ElementReference _input;
+
+    /// <summary>The selected place's name, shown while the bar is closed. Null when no place is selected.</summary>
+    [Parameter]
+    public string? PlaceTitle { get; set; }
+
+    /// <summary>Does the searching, and says what to show under the open bar.</summary>
+    [Parameter, EditorRequired]
+    public required SearchViewModel Search { get; set; }
+
+    /// <summary>Whether the bar is open for typing, with its results under it.</summary>
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    /// <summary>The user pressed the button that deselects the place.</summary>
+    [Parameter]
+    public EventCallback OnClearPlace { get; set; }
+
+    private async Task OnFocus()
+    {
+        if (IsOpen)
+        {
+            return;
+        }
+
+        // Opening starts from an empty search: the place's name is a label,
+        // not something to search for.
+        Search.Reset();
+        await IsOpenChanged.InvokeAsync(true);
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        Search.Query = e.Value as string ?? "";
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && IsOpen)
+        {
+            await IsOpenChanged.InvokeAsync(false);
+            // Or the next key typed would land in the place's name.
+            await Browser.BlurAsync(_input);
+        }
+    }
+
+    private async Task Choose(PlaceUiModel place)
+    {
+        Search.Choose(place);
+        await IsOpenChanged.InvokeAsync(false);
+    }
+}

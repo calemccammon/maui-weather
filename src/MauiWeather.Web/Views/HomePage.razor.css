@@ -1,0 +1,46 @@
+.screen {
+  /* Shared with HomePage.razor.cs, which tells the map what covers it. */
+  --side-panel-width: 400px;
+  --margin: 16px;
+  --gap: 12px;
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.search {
+  position: absolute;
+  top: var(--margin);
+  left: var(--margin);
+  right: var(--margin);
+}
+
+.search.wide {
+  right: auto;
+  width: var(--side-panel-width);
+}
+
+.side-panel {
+  position: absolute;
+  top: calc(var(--margin) + var(--search-bar-height) + var(--gap));
+  bottom: var(--margin);
+  left: var(--margin);
+  width: var(--side-panel-width);
+  border-radius: var(--shape-extra-large);
+  background: var(--color-surface-container-low);
+  box-shadow: var(--elevation-1);
+  overflow: hidden;
+}
+
+.in-sheet {
+  height: 100%;
+  /* The sheet's handle already gives room above. */
+  --panel-padding: 0 var(--space-xl) var(--space-xl);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+}

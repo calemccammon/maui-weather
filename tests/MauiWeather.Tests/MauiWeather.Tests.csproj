@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bunit" Version="2.15.2" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\..\src\MauiWeather.Domain\MauiWeather.Domain.csproj" />
     <ProjectReference Include="..\..\src\MauiWeather.Data\MauiWeather.Data.csproj" />
     <ProjectReference Include="..\..\src\MauiWeather.Presentation\MauiWeather.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\MauiWeather.Web\MauiWeather.Web.csproj" />
   </ItemGroup>
 
 </Project>

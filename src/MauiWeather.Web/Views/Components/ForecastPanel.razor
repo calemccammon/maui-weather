@@ -1,0 +1,118 @@
+@* Current conditions and the week ahead for the selected place. It scrolls,
+   so it can live inside the bottom sheet or the side panel. *@
+
+<div class="panel">
+    @if (Home.Place is PlaceUiModel place)
+    {
+        <header>
+            <h1>@place.Title</h1>
+            @if (place.HasSubtitle)
+            {
+                <p class="muted">@place.Subtitle</p>
+            }
+        </header>
+    }
+
+    @if (Home.Forecast is ForecastUiModel forecast)
+    {
+        @* Read out as one sentence. Wraps onto a second line when the text
+           is too large for one. *@
+        <section class="current" role="group" aria-label="@forecast.Current.Description">
+            <div class="temperature" aria-hidden="true">
+                <Icon Glyph="@forecast.Current.Icon" />
+                <span>@forecast.Current.Temperature</span>
+            </div>
+            <div aria-hidden="true">
+                <p class="title">@forecast.Current.Condition</p>
+                <p class="muted">@forecast.Current.FeelsLike</p>
+                <p class="muted">@forecast.Current.Wind</p>
+            </div>
+        </section>
+
+        @* The units choice drops below the heading when the text is too
+           large for both on one line. *@
+        <div class="week-heading">
+            <h2>@Strings.ForecastThisWeek</h2>
+            <div class="units" role="group" aria-label="@Strings.UnitsLabel">
+                <button type="button"
+                        aria-label="@Strings.UnitsCelsiusName"
+                        aria-pressed="@Pressed(UnitsUiModel.Celsius)"
+                        @onclick="() => Home.SetUnits(UnitsUiModel.Celsius)">
+                    @Strings.UnitsCelsius
+                </button>
+                <button type="button"
+                        aria-label="@Strings.UnitsFahrenheitName"
+                        aria-pressed="@Pressed(UnitsUiModel.Fahrenheit)"
+                        @onclick="() => Home.SetUnits(UnitsUiModel.Fahrenheit)">
+                    @Strings.UnitsFahrenheit
+                </button>
+            </div>
+        </div>
+
+        @if (forecast.HasDays)
+        {
+            <ul class="week">
+                @foreach (DayUiModel day in forecast.Days)
+                {
+                    @* Each row is read out as one sentence. *@
+                    <li aria-label="@day.Description">
+                        <span aria-hidden="true">@day.DayLabel</span>
+                        <Icon Glyph="@day.Icon" />
+                        <span class="chance" aria-hidden="true">@day.Chance</span>
+                        <span class="low" aria-hidden="true">@day.Low</span>
+                        <span class="bar"
+                              aria-hidden="true"
+                              style="--start: @Css.Number(day.BarStart); --end: @Css.Number(day.BarEnd)"></span>
+                        <span class="high" aria-hidden="true">@day.High</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>@Strings.ForecastNoDays</p>
+        }
+
+        <p class="credit">@Strings.ForecastCredit</p>
+    }
+    else
+    {
+        @* What is happening is read out by a screen reader as it changes:
+           loading, then failed. *@
+        <div class="status" aria-live="polite">
+            @if (Home.IsLoading)
+            {
+                <div class="progress" role="progressbar" aria-label="@Strings.ForecastLoading"></div>
+            }
+            else if (Home.FailureMessage is string failure)
+            {
+                <div class="message">
+                    <span class="error"><Icon Glyph="@Glyphs.CloudOff" /></span>
+                    <span>@failure</span>
+                </div>
+                <button class="tonal-button" type="button" @onclick="Home.RetryForecast">
+                    <Icon Glyph="@Glyphs.Refresh" />
+                    @Strings.TryAgain
+                </button>
+            }
+            else
+            {
+                <div class="message">
+                    <span class="hint"><Icon Glyph="@Glyphs.TouchApp" /></span>
+                    <span>@Strings.ForecastHint</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Holds the selected place, its forecast and the units, and acts on what is pressed here.</summary>
+    [Parameter, EditorRequired]
+    public required HomeViewModel Home { get; set; }
+
+    private string Pressed(UnitsUiModel units)
+    {
+        return Home.Units == units ? "true" : "false";
+    }
+}

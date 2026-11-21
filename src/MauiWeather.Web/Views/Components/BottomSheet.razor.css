@@ -1,0 +1,43 @@
+.sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--shape-extra-large) var(--shape-extra-large) 0 0;
+  background: var(--color-surface-container-low);
+  box-shadow: var(--elevation-1);
+  transition: transform 200ms ease-out;
+}
+
+/* Under the finger, the sheet moves at once. */
+.sheet.dragging {
+  transition: none;
+}
+
+.handle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: var(--min-touch-target);
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  cursor: grab;
+  /* The drag is the sheet's, not the page's scroll. */
+  touch-action: none;
+}
+
+.grip {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-on-surface-variant);
+  opacity: 0.4;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+}
