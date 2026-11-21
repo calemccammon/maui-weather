@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every string the user sees or hears. Strings.cs has one property per entry. -->
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Weather</value>
+    <comment>The app's name.</comment>
+  </data>
+  <data name="SearchHint" xml:space="preserve">
+    <value>Search for a place</value>
+    <comment>Hint inside the empty search bar.</comment>
+  </data>
+  <data name="SearchPrompt" xml:space="preserve">
+    <value>Type a city, town or postcode</value>
+    <comment>Shown under the open search bar before anything is typed.</comment>
+  </data>
+  <data name="SearchNothingFound" xml:space="preserve">
+    <value>Nothing found for "{0}"</value>
+    <comment>Shown when a search has no results. {0} is what was typed.</comment>
+  </data>
+  <data name="SearchSearching" xml:space="preserve">
+    <value>Searching</value>
+    <comment>Screen-reader name of the progress bar shown while a search is on its way.</comment>
+  </data>
+  <data name="ClearPlace" xml:space="preserve">
+    <value>Clear place</value>
+    <comment>Screen-reader name of the button that deselects the current place.</comment>
+  </data>
+  <data name="TryAgain" xml:space="preserve">
+    <value>Try again</value>
+    <comment>Button that repeats a request that failed.</comment>
+  </data>
+  <data name="ForecastHint" xml:space="preserve">
+    <value>Search for a place, or press and hold on the map, to see its forecast.</value>
+    <comment>Shown in the forecast area while no place is selected.</comment>
+  </data>
+  <data name="ForecastLoading" xml:space="preserve">
+    <value>Loading the forecast</value>
+    <comment>Screen-reader name of the progress bar shown while a forecast is on its way.</comment>
+  </data>
+  <data name="ForecastThisWeek" xml:space="preserve">
+    <value>This week</value>
+    <comment>Heading above the daily forecast.</comment>
+  </data>
+  <data name="ForecastNoDays" xml:space="preserve">
+    <value>No forecast for the coming days.</value>
+    <comment>Shown instead of the daily forecast when the service sent no days.</comment>
+  </data>
+  <data name="ForecastCredit" xml:space="preserve">
+    <value>Weather data by Open-Meteo.com</value>
+    <comment>Credit the weather service asks for.</comment>
+  </data>
+  <data name="ForecastExpand" xml:space="preserve">
+    <value>Show more of the forecast</value>
+    <comment>Screen-reader name of the sheet's handle while the sheet is at rest.</comment>
+  </data>
+  <data name="ForecastCollapse" xml:space="preserve">
+    <value>Show more of the map</value>
+    <comment>Screen-reader name of the sheet's handle while the sheet is pulled up.</comment>
+  </data>
+  <data name="UnitsLabel" xml:space="preserve">
+    <value>Units</value>
+    <comment>Screen-reader name of the units choice.</comment>
+  </data>
+  <data name="UnitsCelsius" xml:space="preserve">
+    <value>°C</value>
+    <comment>Label of the choice to show temperatures in Celsius.</comment>
+  </data>
+  <data name="UnitsFahrenheit" xml:space="preserve">
+    <value>°F</value>
+    <comment>Label of the choice to show temperatures in Fahrenheit.</comment>
+  </data>
+  <data name="UnitsCelsiusName" xml:space="preserve">
+    <value>Celsius and km/h</value>
+    <comment>Screen-reader name of the Celsius choice.</comment>
+  </data>
+  <data name="UnitsFahrenheitName" xml:space="preserve">
+    <value>Fahrenheit and mph</value>
+    <comment>Screen-reader name of the Fahrenheit choice.</comment>
+  </data>
+  <data name="MapLabel" xml:space="preserve">
+    <value>Map. Press and hold to pick a point.</value>
+    <comment>Screen-reader name of the map.</comment>
+  </data>
+  <data name="MapCredit" xml:space="preserve">
+    <value>© OpenStreetMap contributors</value>
+    <comment>Credit the map's makers ask for.</comment>
+  </data>
+  <data name="PlaceCoordinates" xml:space="preserve">
+    <value>{0}, {1}</value>
+    <comment>What a place with no name is called, as a point picked off the map. {0} is PlaceNorth or PlaceSouth, {1} is PlaceEast or PlaceWest.</comment>
+  </data>
+  <data name="PlaceNorth" xml:space="preserve">
+    <value>{0}°N</value>
+    <comment>A latitude north of the equator. {0} is degrees such as 35.60.</comment>
+  </data>
+  <data name="PlaceSouth" xml:space="preserve">
+    <value>{0}°S</value>
+    <comment>A latitude south of the equator.</comment>
+  </data>
+  <data name="PlaceEast" xml:space="preserve">
+    <value>{0}°E</value>
+    <comment>A longitude east of Greenwich.</comment>
+  </data>
+  <data name="PlaceWest" xml:space="preserve">
+    <value>{0}°W</value>
+    <comment>A longitude west of Greenwich.</comment>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+    <comment>Label of the current day's row in the daily forecast.</comment>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>{0}°</value>
+    <comment>A temperature without its scale, as in a forecast row.</comment>
+  </data>
+  <data name="TemperatureCelsius" xml:space="preserve">
+    <value>{0}°C</value>
+    <comment>The current temperature in Celsius.</comment>
+  </data>
+  <data name="TemperatureFahrenheit" xml:space="preserve">
+    <value>{0}°F</value>
+    <comment>The current temperature in Fahrenheit.</comment>
+  </data>
+  <data name="FeelsLike" xml:space="preserve">
+    <value>Feels like {0}°</value>
+    <comment>The apparent temperature.</comment>
+  </data>
+  <data name="Wind" xml:space="preserve">
+    <value>Wind {0}</value>
+    <comment>The wind speed line. {0} is SpeedKmh or SpeedMph.</comment>
+  </data>
+  <data name="SpeedKmh" xml:space="preserve">
+    <value>{0} km/h</value>
+    <comment>A speed in kilometres per hour.</comment>
+  </data>
+  <data name="SpeedMph" xml:space="preserve">
+    <value>{0} mph</value>
+    <comment>A speed in miles per hour.</comment>
+  </data>
+  <data name="PrecipitationChance" xml:space="preserve">
+    <value>{0}%</value>
+    <comment>Chance of rain or snow in a forecast row.</comment>
+  </data>
+  <data name="SpokenCelsius" xml:space="preserve">
+    <value>{0} degrees Celsius</value>
+    <comment>A Celsius temperature as a screen reader should say it.</comment>
+  </data>
+  <data name="SpokenFahrenheit" xml:space="preserve">
+    <value>{0} degrees Fahrenheit</value>
+    <comment>A Fahrenheit temperature as a screen reader should say it.</comment>
+  </data>
+  <data name="CurrentDescription" xml:space="preserve">
+    <value>Now: {0}, {1}, feels like {2}, wind {3}</value>
+    <comment>The current conditions as one sentence for a screen reader. {0} condition, {1} SpokenCelsius or SpokenFahrenheit, {2} feels-like temperature, {3} SpeedKmh or SpeedMph.</comment>
+  </data>
+  <data name="DayDescription" xml:space="preserve">
+    <value>{0}: {1}, low {2}, high {3} degrees</value>
+    <comment>One day of the forecast as a sentence for a screen reader. {0} day, {1} condition.</comment>
+  </data>
+  <data name="DayDescriptionWithChance" xml:space="preserve">
+    <value>{0}: {1}, low {2}, high {3} degrees, {4} percent chance of precipitation</value>
+    <comment>One day of the forecast, with its chance of rain or snow, as a sentence for a screen reader.</comment>
+  </data>
+  <data name="ConditionClear" xml:space="preserve">
+    <value>Clear</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionMostlyClear" xml:space="preserve">
+    <value>Mostly clear</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionPartlyCloudy" xml:space="preserve">
+    <value>Partly cloudy</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionOvercast" xml:space="preserve">
+    <value>Overcast</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionFog" xml:space="preserve">
+    <value>Fog</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionDrizzle" xml:space="preserve">
+    <value>Drizzle</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionFreezingDrizzle" xml:space="preserve">
+    <value>Freezing drizzle</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionRain" xml:space="preserve">
+    <value>Rain</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionFreezingRain" xml:space="preserve">
+    <value>Freezing rain</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionSnow" xml:space="preserve">
+    <value>Snow</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionRainShowers" xml:space="preserve">
+    <value>Rain showers</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionSnowShowers" xml:space="preserve">
+    <value>Snow showers</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionThunderstorm" xml:space="preserve">
+    <value>Thunderstorm</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="ConditionUnknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Name of a weather condition.</comment>
+  </data>
+  <data name="FailureTimeout" xml:space="preserve">
+    <value>The weather service took too long to answer.</value>
+    <comment>Error: the request timed out.</comment>
+  </data>
+  <data name="FailureNoConnection" xml:space="preserve">
+    <value>Could not reach the weather service. Check your connection.</value>
+    <comment>Error: no network, or the service is down.</comment>
+  </data>
+  <data name="FailureBadResponse" xml:space="preserve">
+    <value>The weather service sent an answer this app could not read.</value>
+    <comment>Error: the response was not in the expected shape.</comment>
+  </data>
+  <data name="FailureRejected" xml:space="preserve">
+    <value>The weather service refused the request.</value>
+    <comment>Error: the service answered with an error.</comment>
+  </data>
+  <data name="FailureUnavailable" xml:space="preserve">
+    <value>The weather service is having trouble. Try again in a moment.</value>
+    <comment>Error: the service answered with a server error, or said it is too busy.</comment>
+  </data>
+  <data name="FailureInvalidPlace" xml:space="preserve">
+    <value>That point is not on the map.</value>
+    <comment>Error: the chosen coordinates are off the globe.</comment>
+  </data>
+</root>

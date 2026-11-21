@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- The app's one screen: a map, a search bar over it, and the forecast for
+     the selected place.
+
+     On a phone the forecast is a bottom sheet that drags up over the map.
+     From Material's "expanded" window width up, it is a panel at the side.
+     HomePage.xaml.cs decides which, and tells the map what covers it. -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:MauiWeather.Views.Components"
+             xmlns:strings="clr-namespace:MauiWeather.Presentation.Resources;assembly=MauiWeather.Presentation"
+             xmlns:viewModels="clr-namespace:MauiWeather.Presentation.Home.ViewModels;assembly=MauiWeather.Presentation"
+             x:Class="MauiWeather.Views.HomePage"
+             x:DataType="viewModels:HomeViewModel"
+             Title="{x:Static strings:Strings.AppTitle}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+    <Grid x:Name="Root">
+
+        <components:WeatherMap x:Name="Map"
+                               Place="{Binding Place}"
+                               PinColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                               PointPicked="OnPointPicked" />
+
+        <!-- The credit the map's makers ask for, kept clear of the forecast. -->
+        <Border x:Name="Credit"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                Opacity="0.8"
+                StrokeThickness="0"
+                StrokeShape="{StaticResource ShapeExtraSmall}"
+                Padding="4,2"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                InputTransparent="True">
+            <Label Text="{x:Static strings:Strings.MapCredit}" Style="{StaticResource LabelSmall}" />
+        </Border>
+
+        <!-- Phone: the forecast in a sheet. -->
+        <components:BottomSheet x:Name="Sheet">
+            <components:ForecastPanel ContentPadding="24,0,24,24" />
+        </components:BottomSheet>
+
+        <!-- Wide window: the forecast in a panel under the search bar,
+             rounded on every corner since it floats clear of the edges. -->
+        <Border x:Name="SidePanel"
+                Style="{StaticResource Panel}"
+                StrokeShape="{StaticResource ShapeExtraLarge}"
+                HorizontalOptions="Start"
+                IsVisible="False">
+            <components:ForecastPanel />
+        </Border>
+
+        <!-- A press anywhere else closes the search results. -->
+        <BoxView x:Name="Scrim" Color="Transparent" IsVisible="False">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrimTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- Last, so its results lie over everything else. -->
+        <components:PlaceSearchBar x:Name="SearchBar"
+                                   VerticalOptions="Start"
+                                   ClearRequested="OnClearRequested" />
+    </Grid>
+</ContentPage>

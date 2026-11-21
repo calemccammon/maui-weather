@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Implements the domain's repositories: Open-Meteo over HTTP, and
+       settings in a key-value store the app supplies. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MauiWeather.Domain\MauiWeather.Domain.csproj" />
+  </ItemGroup>
+
+  <!-- The tests read the wire-shaped models, which nothing else should. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="MauiWeather.Tests" />
+  </ItemGroup>
+
+</Project>

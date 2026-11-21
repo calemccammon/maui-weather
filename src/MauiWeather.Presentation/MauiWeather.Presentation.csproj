@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- What the screen shows and the view models that produce it. It knows
+       the domain but neither the data layer nor MAUI, so it is tested
+       without a device. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MauiWeather.Domain\MauiWeather.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
