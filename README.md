@@ -5,8 +5,8 @@ Blazor WebAssembly. One screen: a map with a Material 3 search bar over it.
 Search for a place, or press and hold on the map, and the forecast for the
 week appears.
 
-The two front ends share everything beneath the views: the Blazor app was
-added without changing a line of the domain, data or presentation projects.
+The two front ends share everything below the views: the Blazor app was
+added without changing the domain, data or presentation projects.
 
 **Live demo (the Blazor web app):** <https://calemccammon.github.io/maui-weather/>
 
@@ -14,46 +14,51 @@ added without changing a line of the domain, data or presentation projects.
 | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | ![The app on a wide window: a side panel with the week's forecast beside the map](docs/screenshot-wide.png) | ![The app on a phone: the forecast in a bottom sheet over the map](docs/screenshot-phone.png) |
 
-It is one of four builds of the same app, alongside
+It is one of six cross-platform builds of the same app, written to compare
+the frameworks. The others are
 [flutter-weather](https://github.com/calemccammon/flutter-weather),
-[react-native-weather](https://github.com/calemccammon/react-native-weather) and
 [kmp-weather](https://github.com/calemccammon/kmp-weather),
-to compare the frameworks.
+[react-native-weather](https://github.com/calemccammon/react-native-weather),
+[ionic-weather](https://github.com/calemccammon/ionic-weather) and
+[capacitor-weather](https://github.com/calemccammon/capacitor-weather).
+[android-weather](https://github.com/calemccammon/android-weather) is the
+native Android build in Kotlin and Jetpack Compose, which goes further with
+saved places, offline forecasts and a home-screen widget.
 
 ## What it does
 
-- **Search** with results as you type, after a short pause; an answer to an
-  older search never replaces a newer one.
+- **Search as you type**, debounced; a late response to an older query never
+  overwrites a newer one.
 - **Pick a point** by pressing and holding on the map.
 - **Forecast**: current conditions, then seven days with the chance of
-  precipitation and each day's range drawn against the week's.
+  precipitation and a bar placing each day's low and high within the week's
+  range.
 - **Adapts to the window**: a bottom sheet on a phone, a side panel from
   840 dp wide (a phone on its side, a tablet). The map keeps the chosen
   place clear of both.
-- **Celsius or Fahrenheit**, chosen on the forecast and remembered between
-  launches. Until you choose, it follows the device's region.
+- **Celsius or Fahrenheit**, switched from the forecast and saved between
+  launches. The default follows the device's region.
 - **Light and dark** themes from one seed colour, following the system.
-- **Accessible**: each forecast block is read as one sentence by a screen
-  reader, and what is loading or has failed is announced.
-- **Says what went wrong**: a timeout, no connection, a refused request and a
-  service in trouble each have their own message and a way to try again.
+- **Accessible**: screen readers read each forecast block as one sentence,
+  and loading and errors are announced.
+- **Errors**: a timeout, no connection, a refused request and an
+  overloaded service each get their own message and a Try again button.
 
 ## Architecture
 
-Clean Architecture, with one project per layer, so the compiler holds the
-layers to their rule: a project can only use what it references.
+Clean Architecture with one project per layer, so the compiler enforces the
+dependency rule: a project can only use what it references.
 
 | Project                        | References | What it holds                                                                                                                                                                                                                                        |
 | ------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/MauiWeather.Domain`       | nothing    | The app's own types (`Place`, `Forecast`, `WeatherCondition`, `Units`), the repository interfaces (`IWeatherRepository` with its failure kinds, `ISettingsRepository`), and the use cases (`SearchPlaces`, `GetForecast`, `GetUnits`, `SetUnits`).    |
-| `src/MauiWeather.Data`         | Domain     | Open-Meteo: the wire-shaped models (`*Dto`), their translation into domain types, and the repository implementation over `HttpClient`. Settings go into a key-value store the app supplies.                                                           |
-| `src/MauiWeather.Presentation` | Domain     | What the screen shows, already rounded and worded (`*UiModel`), and the two view models that produce it. Every string is in `Resources/Strings.resx`. It knows neither the data layer nor MAUI, so it is tested without a device.                      |
-| `src/MauiWeather`              | all three  | The MAUI app: the page and its views in XAML, and `MauiProgram`, the one place that says which implementation stands behind each interface.                                                                                                           |
+| `src/MauiWeather.Data`         | Domain     | Open-Meteo: the wire-shaped models (`*Dto`), their translation into domain types, and the repository implementation over `HttpClient`. Settings go into a key-value store the host app supplies.                                                         |
+| `src/MauiWeather.Presentation` | Domain     | Display-ready models (`*UiModel`) and the two view models that produce them. All strings are in `Resources/Strings.resx`. It depends on neither the data layer nor MAUI, so it is tested without a device.                      |
+| `src/MauiWeather`              | all three  | The MAUI app: the page and its views in XAML, and `MauiProgram`, the composition root that binds each interface to its implementation.                                                                                                           |
 | `src/MauiWeather.Web`          | all three  | The Blazor WebAssembly app: the same page and views as Razor components, and `Program.cs`, which does for the browser what `MauiProgram` does for a device.                                                                                           |
 | `tests/MauiWeather.Tests`      | the three libraries and the web app | xUnit tests for the domain, data and presentation layers, and bUnit tests for the Razor components.                                                                                                                          |
 
-Each layer has its own model of the same thing, and a translation between
-them:
+Each layer has its own model, with a mapping between them:
 
 |              | Data                           | Domain       | Presentation                                                          |
 | ------------ | ------------------------------ | ------------ | --------------------------------------------------------------------- |
@@ -66,7 +71,7 @@ State is held by two view models, `HomeViewModel` and `SearchViewModel`,
 built on the MVVM Toolkit's observable properties and commands; the XAML
 binds to them with compiled bindings. A request that has been overtaken
 (another place selected, more text typed) is cancelled, and its answer is
-ignored if it arrives anyway.
+ignored if it still arrives.
 
 In the MAUI app the map is [Mapsui](https://mapsui.com/) over
 OpenStreetMap's tiles, since MapLibre has no maintained MAUI control. MAUI
@@ -78,15 +83,15 @@ has no bottom sheet either, so `BottomSheet` is the app's own.
 
 | Path                 | What it holds                                                                                                                                                                        |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Views`              | `HomePage` and its components (`PlaceSearchBar`, `ForecastPanel`, `BottomSheet`, `WeatherMap`), each with its own style sheet beside it. They draw what the view models hold.          |
-| `Data/BrowserStore`  | The key-value store the data layer asks for, over the browser's `localStorage`. On a device the MAUI app supplies one over its preferences.                                            |
-| `wwwroot/js`         | The JavaScript Blazor cannot do without: the map, drawn with [MapLibre GL JS](https://maplibre.org/), and three small calls to the browser.                                            |
+| `Views`              | `HomePage` and its components (`PlaceSearchBar`, `ForecastPanel`, `BottomSheet`, `WeatherMap`), each with a scoped style sheet. They render the view models' state.          |
+| `Data/BrowserStore`  | The data layer's key-value store, backed by `localStorage`. On a device the MAUI app supplies one backed by its preferences.                                            |
+| `wwwroot/js`         | The JavaScript interop: the map, drawn with [MapLibre GL JS](https://maplibre.org/), and small helpers for window size, theme changes, focus and pointer capture.                                            |
 | `Program.cs`         | The composition root.                                                                                                                                                                  |
 
-The view models raise `PropertyChanged`, which XAML bindings listen to
-directly. Blazor has no bindings of that kind, so `HomePage` listens and
-draws itself again. That one subscription is all it took to put the same
-view models behind a different UI framework.
+The view models raise `PropertyChanged`, which XAML bindings observe
+directly. Blazor has no equivalent bindings, so `HomePage` subscribes to the
+event and re-renders. That subscription is the only adaptation the view
+models needed to run under a second UI framework.
 
 MapLibre GL JS is fetched by [LibMan](https://learn.microsoft.com/aspnet/core/client-side/libman/)
 when the project is built, at the version in `libman.json`.
@@ -104,10 +109,8 @@ dotnet publish src/MauiWeather.Web -c Release -o publish # static site in publis
 
 Start the emulator first with `emulator -avd Pixel_API_36`.
 
-MAUI targets Android, iOS, macOS (Mac Catalyst) and Windows. From Linux only
-Android can be built, and Android is the only one this app has been run on;
-iOS and macOS need a Mac, Windows needs Windows. MAUI itself has no web
-target, which is why the browser gets its own views.
+MAUI targets Android, iOS, macOS (Mac Catalyst) and Windows; only Android
+can be built from Linux. MAUI has no web target, which is why the browser gets its own views.
 
 ## Checks
 
@@ -118,21 +121,20 @@ dotnet format --verify-no-changes   # `dotnet format` fixes
 
 `Directory.Build.props` turns on the .NET analyzers at their recommended
 level, checks the code style rules in `.editorconfig` during the build, and
-treats every warning as an error. So a normal build is also the lint run.
+treats every warning as an error, so a normal build is also the lint run.
 
-There are no tests of the MAUI views: MAUI has none that run without a
-device. The view models are tested instead, and the views only bind to them.
-The web app's views are tested with [bUnit](https://bunit.dev/), which draws
-a Razor component without a browser, with a stand-in for its JavaScript.
+The MAUI views have no tests, since MAUI has no UI test framework that runs
+without a device; the views only bind to the view models, which are tested.
+The web app's views are tested with [bUnit](https://bunit.dev/), which
+renders Razor components without a browser, with the JavaScript faked.
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests:
-format check, analyzers and tests for the three libraries and the web app,
-then the web app is published, and the MAUI app is checked the same way and
-built. The site and an Android debug APK are uploaded as workflow artifacts.
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests. It
+runs the format check, analyzers and tests for the three libraries and the
+web app, publishes the web app, then analyzes and builds the MAUI app. The
+site and an Android debug APK are uploaded as workflow artifacts.
 
-`.github/workflows/pages.yml` publishes the web app to
-`https://calemccammon.github.io/maui-weather/`. It runs only when started by
-hand from the Actions tab.
+`.github/workflows/pages.yml` publishes the live demo. It runs only when
+started by hand from the Actions tab.
 
 ## Data and credits
 
@@ -151,19 +153,20 @@ hand from the Actions tab.
 
 - **Android and the browser only so far.** The other platforms MAUI targets
   have not been built or run.
-- **English only.** The wording is all in `Strings.resx`, and weekday names
-  follow the device's language, so a second language is one more file; none
-  has been written.
+- **English only.** All strings are in `Strings.resx` and weekday names
+  follow the device's locale, so adding a language means adding one file.
 - **Places are not saved**: the chosen place is forgotten when the app
   closes. Only the choice of units is kept.
-- **In the MAUI app the map stays light in the dark theme.** OpenStreetMap's
-  tiles come in one style. The web app's map changes with the theme.
-- **The bottom sheet drags by its handle only**, between two stops. Its
-  content scrolls, and does not pull the sheet up.
-- **Very large text** is not given more room in the MAUI app: the forecast's
-  columns are a fixed width. In the web app they grow with the text.
-- **The web app downloads the .NET runtime** before it starts, a few megabytes
-  compressed, which a browser then keeps.
+- **In the MAUI app the map stays light in the dark theme**, because
+  OpenStreetMap's tiles come in one style. The web app's map follows the
+  theme.
+- **The bottom sheet drags by its handle only**, between two stops.
+  Scrolling its content does not pull the sheet up.
+- **Very large text** gets no extra room in the MAUI app, where the
+  forecast's columns are a fixed width. In the web app they widen with the
+  text.
+- **The web app downloads the .NET runtime** (a few megabytes compressed)
+  before it starts; the browser caches it.
 
 ## Not built
 
