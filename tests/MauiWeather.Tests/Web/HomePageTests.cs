@@ -109,10 +109,14 @@ public sealed class HomePageTests : WebTest
 
         page.InvokeAsync(() => Map(page).OnLongPress(35.6, -82.55));
 
-        Assert.Equal("35.60°N, 82.55°W", page.Find("h1").TextContent);
-        Assert.Equal("35.60°N, 82.55°W", page.Find("input").GetAttribute("value"));
-        Assert.Equal("This week", page.Find("h2").TextContent);
-        Assert.Equal(35.6, Map(page).Place?.Latitude);
+        // The selection renders asynchronously: wait for it rather than look at once.
+        page.WaitForAssertion(() =>
+        {
+            Assert.Equal("35.60°N, 82.55°W", page.Find("h1").TextContent);
+            Assert.Equal("35.60°N, 82.55°W", page.Find("input").GetAttribute("value"));
+            Assert.Equal("This week", page.Find("h2").TextContent);
+            Assert.Equal(35.6, Map(page).Place?.Latitude);
+        });
     }
 
     [Fact]
@@ -125,11 +129,15 @@ public sealed class HomePageTests : WebTest
         Clock.Advance(MauiWeather.Presentation.Home.ViewModels.SearchViewModel.Debounce);
         page.WaitForElement(".result").Click();
 
-        Assert.Equal("Asheville", page.Find("h1").TextContent);
-        Assert.Equal("Asheville", page.Find("input").GetAttribute("value"));
-        Assert.Equal(Samples.Asheville.Longitude, Map(page).Place?.Longitude);
-        Assert.Empty(page.FindAll(".results"));
-        Assert.Empty(page.FindAll(".scrim"));
+        // Choosing a result renders asynchronously: wait for it rather than look at once.
+        page.WaitForAssertion(() =>
+        {
+            Assert.Equal("Asheville", page.Find("h1").TextContent);
+            Assert.Equal("Asheville", page.Find("input").GetAttribute("value"));
+            Assert.Equal(Samples.Asheville.Longitude, Map(page).Place?.Longitude);
+            Assert.Empty(page.FindAll(".results"));
+            Assert.Empty(page.FindAll(".scrim"));
+        });
     }
 
     [Fact]
