@@ -85,8 +85,17 @@ public class UiModelsTests
         CurrentUiModel current = ForecastUiModel.From(Samples.Forecast(temperature: 2.5), Units.Metric).Current;
 
         Assert.Equal("3°C", current.Temperature);
-        Assert.Equal("Wind 4 km/h", current.Wind);
-        Assert.Equal("Now: Clear, 3 degrees Celsius, feels like 31, wind 4 km/h", current.Description);
+        Assert.Equal("Wind 7 km/h", current.Wind);
+        Assert.Equal("Now: Clear, 3 degrees Celsius, feels like 0, wind 7 km/h", current.Description);
+    }
+
+    [Fact]
+    public void A_forecast_is_converted_before_it_is_rounded()
+    {
+        // 0.3°C is 32.54°F; rounded first, it would be 0°C and so 32°F.
+        CurrentUiModel current = ForecastUiModel.From(Samples.Forecast(temperature: 0.3), Units.Imperial).Current;
+
+        Assert.Equal("33°F", current.Temperature);
     }
 
     [Fact]
@@ -118,10 +127,10 @@ public class UiModelsTests
     [Fact]
     public void A_days_bar_shows_where_its_range_sits_in_the_weeks()
     {
-        // The week runs from 28.6 to 64.3.
+        // The week runs from -1.9 to 18°C; converting keeps where each day sits in it.
         Assert.Equal(1, _imperial.Days[0].BarEnd);
-        Assert.Equal((30.2 - 28.6) / (64.3 - 28.6), _imperial.Days[0].BarStart, precision: 9);
-        Assert.Equal((58.1 - 28.6) / (64.3 - 28.6), _imperial.Days[1].BarEnd, precision: 9);
+        Assert.Equal((-1 - -1.9) / (18 - -1.9), _imperial.Days[0].BarStart, precision: 9);
+        Assert.Equal((14.5 - -1.9) / (18 - -1.9), _imperial.Days[1].BarEnd, precision: 9);
         Assert.Equal((0, 1), (_imperial.Days[2].BarStart, _imperial.Days[2].BarEnd));
     }
 

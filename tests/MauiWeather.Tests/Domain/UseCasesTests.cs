@@ -29,17 +29,17 @@ public class UseCasesTests
     }
 
     [Fact]
-    public async Task A_forecast_is_asked_for_at_the_place_in_the_units_given()
+    public async Task A_forecast_is_asked_for_at_the_place()
     {
-        await new GetForecast(_weather).InvokeAsync(Samples.Asheville, Units.Imperial, CancellationToken.None);
+        await new GetForecast(_weather).InvokeAsync(Samples.Asheville, CancellationToken.None);
 
-        Assert.Equal([new ForecastRequest(35.6, -82.55, Units.Imperial)], _weather.ForecastRequests);
+        Assert.Equal([new ForecastRequest(35.6, -82.55)], _weather.ForecastRequests);
     }
 
     [Fact]
     public async Task A_forecast_is_asked_for_with_the_longitude_in_range()
     {
-        await new GetForecast(_weather).InvokeAsync(new Place(10, 190), Units.Metric, CancellationToken.None);
+        await new GetForecast(_weather).InvokeAsync(new Place(10, 190), CancellationToken.None);
 
         Assert.Equal(-170, Assert.Single(_weather.ForecastRequests).Longitude);
     }
@@ -52,7 +52,7 @@ public class UseCasesTests
     public async Task A_point_off_the_globe_is_refused_without_asking_the_repository(double latitude, double longitude)
     {
         WeatherException error = await Assert.ThrowsAsync<WeatherException>(
-            () => new GetForecast(_weather).InvokeAsync(new Place(latitude, longitude), Units.Metric, CancellationToken.None));
+            () => new GetForecast(_weather).InvokeAsync(new Place(latitude, longitude), CancellationToken.None));
 
         Assert.Equal(WeatherFailure.InvalidPlace, error.Failure);
         Assert.Empty(_weather.ForecastRequests);

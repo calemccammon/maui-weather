@@ -112,12 +112,12 @@ public sealed class ForecastPanelTests : WebTest
 
         IRenderedComponent<ForecastPanel> panel = Panel();
 
-        // The week runs from 28.6 to 64.3; Thursday from 41.9 to 58.1.
-        Assert.Equal("--start: 0.3725; --end: 0.8263", panel.FindAll(".week .bar")[1].GetAttribute("style"));
+        // The week runs from -1.9 to 18°C; Thursday from 5.5 to 14.5.
+        Assert.Equal("--start: 0.3719; --end: 0.8241", panel.FindAll(".week .bar")[1].GetAttribute("style"));
     }
 
     [Fact]
-    public void The_units_in_use_are_marked_and_pressing_the_other_asks_again_in_them()
+    public void The_units_in_use_are_marked_and_pressing_the_other_converts_the_forecast_without_asking_again()
     {
         Home.Select(Samples.Asheville);
         IRenderedComponent<ForecastPanel> panel = Panel();
@@ -132,9 +132,9 @@ public sealed class ForecastPanelTests : WebTest
 
         Assert.Equal("true", Celsius().GetAttribute("aria-pressed"));
         Assert.Equal("false", Fahrenheit().GetAttribute("aria-pressed"));
-        Assert.Equal(Units.Metric, Weather.ForecastRequests[^1].Units);
+        Assert.Single(Weather.ForecastRequests);
         Assert.Equal(Units.Metric, Settings.Units);
-        Assert.Contains("36°C", panel.Find(".temperature").TextContent, StringComparison.Ordinal);
+        Assert.Contains("2°C", panel.Find(".temperature").TextContent, StringComparison.Ordinal);
     }
 
     [Fact]

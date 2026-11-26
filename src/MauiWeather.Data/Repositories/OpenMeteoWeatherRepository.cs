@@ -44,21 +44,16 @@ public sealed class OpenMeteoWeatherRepository(HttpClient client) : IWeatherRepo
     public async Task<Forecast> GetForecastAsync(
         double latitude,
         double longitude,
-        Units units,
         CancellationToken cancellationToken)
     {
-        (string temperature, string wind) = units switch
-        {
-            Units.Imperial => ("fahrenheit", "mph"),
-            _ => ("celsius", "kmh"),
-        };
         // Numbers are written the same way whatever the device's language.
         string point = string.Create(CultureInfo.InvariantCulture, $"latitude={latitude}&longitude={longitude}");
         string url = $"{ForecastUrl}?{point}"
             + "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day"
             + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
             + $"&forecast_days={ForecastDays}&timezone=auto"
-            + $"&temperature_unit={temperature}&wind_speed_unit={wind}";
+            // Always metric; the app converts what it holds when units change.
+            + "&temperature_unit=celsius&wind_speed_unit=kmh";
         string body = await GetAsync(url, cancellationToken).ConfigureAwait(false);
 
         ForecastDto response = Read(body, OpenMeteoJson.Default.ForecastDto);

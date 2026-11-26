@@ -9,27 +9,31 @@ internal static class Samples
 
     public static readonly Place Sydney = new(-33.87, 151.21, "Sydney", Country: "Australia");
 
-    /// <summary>A Wednesday morning, then a week whose first day is that Wednesday.</summary>
-    public static Forecast Forecast(double temperature = 35.8, IReadOnlyList<DailyForecast>? days = null)
+    /// <summary>
+    /// A Wednesday morning, then a week whose first day is that Wednesday, in
+    /// metric units as fetched. In imperial units it is 36°F, feels like 31°,
+    /// wind 4 mph, and the days run from 30° to 64°, 42° to 58° and 29° to 64°.
+    /// </summary>
+    public static Forecast Forecast(double temperature = 2.1, IReadOnlyList<DailyForecast>? days = null)
     {
         return new Forecast(
             new CurrentConditions(
                 ObservedAt: new DateTime(2026, 11, 18, 9, 0, 0),
                 Temperature: temperature,
-                FeelsLike: 31.3,
-                WindSpeed: 4.4,
+                FeelsLike: -0.4,
+                WindSpeed: 7,
                 Condition: WeatherCondition.Clear,
                 IsDay: true),
             days ??
             [
-                new DailyForecast(new DateOnly(2026, 11, 18), Low: 30.2, High: 64.3, WeatherCondition.Clear),
-                new DailyForecast(new DateOnly(2026, 11, 19), Low: 41.9, High: 58.1, WeatherCondition.Rain, 47),
-                new DailyForecast(new DateOnly(2026, 11, 22), Low: 28.6, High: 64.3, WeatherCondition.Rain, 80),
+                new DailyForecast(new DateOnly(2026, 11, 18), Low: -1, High: 18, WeatherCondition.Clear),
+                new DailyForecast(new DateOnly(2026, 11, 19), Low: 5.5, High: 14.5, WeatherCondition.Rain, 47),
+                new DailyForecast(new DateOnly(2026, 11, 22), Low: -1.9, High: 18, WeatherCondition.Rain, 80),
             ]);
     }
 }
 
-internal sealed record ForecastRequest(double Latitude, double Longitude, Units Units);
+internal sealed record ForecastRequest(double Latitude, double Longitude);
 
 /// <summary>
 /// A repository that answers from memory and records what it was asked.
@@ -73,10 +77,9 @@ internal sealed class FakeWeatherRepository : IWeatherRepository
     public Task<Forecast> GetForecastAsync(
         double latitude,
         double longitude,
-        Units units,
         CancellationToken cancellationToken)
     {
-        ForecastRequests.Add(new ForecastRequest(latitude, longitude, units));
+        ForecastRequests.Add(new ForecastRequest(latitude, longitude));
         return Answer(ForecastToReturn, Forecasts, cancellationToken);
     }
 
