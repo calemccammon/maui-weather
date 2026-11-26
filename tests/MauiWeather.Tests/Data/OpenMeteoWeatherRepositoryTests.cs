@@ -59,9 +59,9 @@ public class OpenMeteoWeatherRepositoryTests
             new HttpClient(handler) { Timeout = timeout ?? OpenMeteoWeatherRepository.DefaultTimeout });
     }
 
-    private static Task<Forecast> ForecastSomewhere(OpenMeteoWeatherRepository repository, Units units = Units.Imperial)
+    private static Task<Forecast> ForecastSomewhere(OpenMeteoWeatherRepository repository)
     {
-        return repository.GetForecastAsync(35.6, -82.55, units, CancellationToken.None);
+        return repository.GetForecastAsync(35.6, -82.55, CancellationToken.None);
     }
 
     private static async Task<WeatherException> FailureOf(Func<Task> request)
@@ -133,22 +133,18 @@ public class OpenMeteoWeatherRepositoryTests
     }
 
     [Fact]
-    public async Task A_forecast_is_asked_for_in_the_units_wanted_on_the_places_own_clock()
+    public async Task A_forecast_is_asked_for_in_metric_units_on_the_places_own_clock()
     {
-        await ForecastSomewhere(Answering(ForecastBody), Units.Imperial);
-        await ForecastSomewhere(Answering(ForecastBody), Units.Metric);
+        await ForecastSomewhere(Answering(ForecastBody));
 
         Assert.Equal("api.open-meteo.com", _urls[0].Host);
         Assert.Equal("/v1/forecast", _urls[0].AbsolutePath);
-        System.Collections.Specialized.NameValueCollection imperial = HttpUtility.ParseQueryString(_urls[0].Query);
-        System.Collections.Specialized.NameValueCollection metric = HttpUtility.ParseQueryString(_urls[1].Query);
-        Assert.Equal("35.6", imperial["latitude"]);
-        Assert.Equal("-82.55", imperial["longitude"]);
-        Assert.Equal("auto", imperial["timezone"]);
-        Assert.Equal("fahrenheit", imperial["temperature_unit"]);
-        Assert.Equal("mph", imperial["wind_speed_unit"]);
-        Assert.Equal("celsius", metric["temperature_unit"]);
-        Assert.Equal("kmh", metric["wind_speed_unit"]);
+        System.Collections.Specialized.NameValueCollection query = HttpUtility.ParseQueryString(_urls[0].Query);
+        Assert.Equal("35.6", query["latitude"]);
+        Assert.Equal("-82.55", query["longitude"]);
+        Assert.Equal("auto", query["timezone"]);
+        Assert.Equal("celsius", query["temperature_unit"]);
+        Assert.Equal("kmh", query["wind_speed_unit"]);
     }
 
     [Fact]

@@ -58,7 +58,7 @@ public sealed class HomeViewModelTests
         _weather.Forecasts[0].SetResult(Samples.Forecast());
 
         Assert.Equal(("Asheville", UnitsUiModel.Fahrenheit, "36°F", false, null), Shown(viewModel));
-        Assert.Equal([new ForecastRequest(35.6, -82.55, Units.Imperial)], _weather.ForecastRequests);
+        Assert.Equal([new ForecastRequest(35.6, -82.55)], _weather.ForecastRequests);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public sealed class HomeViewModelTests
 
         Assert.Equal(("Sydney", UnitsUiModel.Fahrenheit, null, true, null), Shown(viewModel));
 
-        _weather.Forecasts[1].SetResult(Samples.Forecast(temperature: 70));
+        _weather.Forecasts[1].SetResult(Samples.Forecast(temperature: 21));
 
         Assert.Equal("70°F", viewModel.Forecast?.Current.Temperature);
     }
@@ -162,7 +162,7 @@ public sealed class HomeViewModelTests
     }
 
     [Fact]
-    public void Choosing_other_units_asks_for_the_forecast_again_in_them_and_remembers_the_choice()
+    public void Choosing_other_units_converts_the_forecast_shown_without_asking_again_and_remembers_the_choice()
     {
         using HomeViewModel viewModel = ViewModel();
         viewModel.Select(Samples.Asheville);
@@ -171,11 +171,37 @@ public sealed class HomeViewModelTests
 
         viewModel.SetUnitsCommand.Execute(UnitsUiModel.Celsius);
 
-        Assert.Equal(("Asheville", UnitsUiModel.Celsius, "36°C", false, null), Shown(viewModel));
-        Assert.Equal([Units.Imperial, Units.Metric], _weather.ForecastRequests.Select(request => request.Units));
+        Assert.Single(_weather.ForecastRequests);
+        Assert.Equal(("Asheville", UnitsUiModel.Celsius, "2°C", false, null), Shown(viewModel));
+        Assert.Equal("Wind 7 km/h", viewModel.Forecast?.Current.Wind);
         Assert.Equal(Units.Metric, _settings.Units);
-        // The place is the same one, so the map has no reason to move.
+        // Nothing is fetched, so nothing loads; and the place is the same one,
+        // so the map has no reason to move.
+        Assert.DoesNotContain(nameof(HomeViewModel.IsLoading), changed);
         Assert.DoesNotContain(nameof(HomeViewModel.Place), changed);
+
+        viewModel.SetUnits(UnitsUiModel.Fahrenheit);
+
+        Assert.Single(_weather.ForecastRequests);
+        Assert.Equal(("Asheville", UnitsUiModel.Fahrenheit, "36°F", false, null), Shown(viewModel));
+        Assert.Equal("Wind 4 mph", viewModel.Forecast?.Current.Wind);
+    }
+
+    [Fact]
+    public void A_forecast_still_on_its_way_when_the_units_change_arrives_in_the_new_ones()
+    {
+        using HomeViewModel viewModel = ViewModel();
+        _weather.ForecastToReturn = null;
+        viewModel.Select(Samples.Asheville);
+
+        viewModel.SetUnits(UnitsUiModel.Celsius);
+
+        Assert.Equal(("Asheville", UnitsUiModel.Celsius, null, true, null), Shown(viewModel));
+
+        _weather.Forecasts[0].SetResult(Samples.Forecast());
+
+        Assert.Single(_weather.ForecastRequests);
+        Assert.Equal(("Asheville", UnitsUiModel.Celsius, "2°C", false, null), Shown(viewModel));
     }
 
     [Fact]
@@ -210,7 +236,7 @@ public sealed class HomeViewModelTests
 
         viewModel.SetUnits(UnitsUiModel.Celsius);
 
-        Assert.Equal("36°C", viewModel.Forecast?.Current.Temperature);
+        Assert.Equal("2°C", viewModel.Forecast?.Current.Temperature);
         Assert.Null(_settings.Units);
     }
 

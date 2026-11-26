@@ -16,6 +16,6 @@ public interface IWeatherRepository
     /// <summary>Places whose name matches <paramref name="query"/>, best match first.</summary>
     Task<IReadOnlyList<Place>> SearchPlacesAsync(string query, CancellationToken cancellationToken);
 
-    /// <summary>Current conditions and the days ahead at a point.</summary>
-    Task<Forecast> GetForecastAsync(double latitude, double longitude, Units units, CancellationToken cancellationToken);
+    /// <summary>Current conditions and the days ahead at a point, in metric units.</summary>
+    Task<Forecast> GetForecastAsync(double latitude, double longitude, CancellationToken cancellationToken);
 }

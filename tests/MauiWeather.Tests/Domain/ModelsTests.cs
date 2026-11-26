@@ -36,6 +36,48 @@ public class ModelsTests
     }
 
     [Theory]
+    [InlineData(10, 50)]
+    [InlineData(0, 32)]
+    [InlineData(-40, -40)]
+    [InlineData(37.5, 99.5)]
+    public void A_forecast_in_imperial_units_has_every_temperature_in_Fahrenheit(double celsius, double fahrenheit)
+    {
+        DailyForecast day = new(new DateOnly(2026, 11, 18), Low: celsius, High: celsius + 10, WeatherCondition.Clear);
+        Forecast metric = new(Samples.Forecast().Current with { Temperature = celsius, FeelsLike = celsius - 10 }, [day]);
+
+        Forecast imperial = metric.InUnits(Units.Imperial);
+
+        Assert.Equal(fahrenheit, imperial.Current.Temperature, precision: 9);
+        Assert.Equal(fahrenheit - 18, imperial.Current.FeelsLike, precision: 9);
+        Assert.Equal(fahrenheit, imperial.Days[0].Low, precision: 9);
+        Assert.Equal(fahrenheit + 18, imperial.Days[0].High, precision: 9);
+    }
+
+    [Fact]
+    public void A_forecast_in_imperial_units_has_its_wind_in_mph_and_the_rest_unchanged()
+    {
+        Forecast metric = Samples.Forecast() with { Current = Samples.Forecast().Current with { WindSpeed = 20 } };
+
+        Forecast imperial = metric.InUnits(Units.Imperial);
+
+        Assert.Equal(12.42742, imperial.Current.WindSpeed, precision: 9);
+        Assert.Equal(
+            metric.Days.Select(day => (day.Date, day.Condition, day.PrecipitationChance)),
+            imperial.Days.Select(day => (day.Date, day.Condition, day.PrecipitationChance)));
+        Assert.Equal(
+            (metric.Current.ObservedAt, metric.Current.Condition, metric.Current.IsDay),
+            (imperial.Current.ObservedAt, imperial.Current.Condition, imperial.Current.IsDay));
+    }
+
+    [Fact]
+    public void A_forecast_in_metric_units_is_the_one_fetched()
+    {
+        Forecast metric = Samples.Forecast();
+
+        Assert.Same(metric, metric.InUnits(Units.Metric));
+    }
+
+    [Theory]
     [InlineData("US", Units.Imperial)]
     [InlineData("LR", Units.Imperial)]
     [InlineData("MM", Units.Imperial)]

@@ -9,7 +9,8 @@ public sealed class GetForecast(IWeatherRepository repository)
     private const double MaxLatitude = 90;
 
     /// <summary>
-    /// The forecast at <paramref name="place"/> in <paramref name="units"/>.
+    /// The forecast at <paramref name="place"/>, in metric units (see
+    /// <see cref="Forecast.InUnits"/>).
     /// </summary>
     /// <remarks>
     /// The longitude is brought into range first (see
@@ -17,7 +18,7 @@ public sealed class GetForecast(IWeatherRepository repository)
     /// with <see cref="WeatherFailure.InvalidPlace"/> without asking the
     /// repository.
     /// </remarks>
-    public async Task<Forecast> InvokeAsync(Place place, Units units, CancellationToken cancellationToken)
+    public async Task<Forecast> InvokeAsync(Place place, CancellationToken cancellationToken)
     {
         // Written so that a NaN fails the check too.
         bool onGlobe = Math.Abs(place.Latitude) <= MaxLatitude && double.IsFinite(place.Longitude);
@@ -27,7 +28,7 @@ public sealed class GetForecast(IWeatherRepository repository)
         }
 
         return await repository
-            .GetForecastAsync(place.Latitude, Place.NormalizeLongitude(place.Longitude), units, cancellationToken)
+            .GetForecastAsync(place.Latitude, Place.NormalizeLongitude(place.Longitude), cancellationToken)
             .ConfigureAwait(false);
     }
 }

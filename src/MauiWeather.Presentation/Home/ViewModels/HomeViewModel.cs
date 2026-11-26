@@ -14,7 +14,9 @@ namespace MauiWeather.Presentation.Home.ViewModels;
 /// </summary>
 /// <remarks>
 /// Selecting a place while an earlier forecast is still on its way gives the
-/// earlier request up, so its answer never replaces the newer one.
+/// earlier request up, so its answer never replaces the newer one. The
+/// forecast is held in metric units and converted for display, so changing
+/// units needs no request.
 /// </remarks>
 public sealed partial class HomeViewModel : ObservableObject, IDisposable
 {
@@ -23,6 +25,9 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
 
     private Place? _place;
     private Units _units;
+
+    /// <summary>The selected place's forecast in metric units, once it has arrived.</summary>
+    private Forecast? _forecast;
 
     /// <summary>Stops the forecast request under way, if any.</summary>
     private CancellationTokenSource? _loading;
@@ -88,7 +93,8 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
 
     /// <summary>
     /// Shows forecasts in <paramref name="chosen"/> from now on, and remembers
-    /// the choice. The forecast on screen is asked for again in them.
+    /// the choice. The forecast on screen is converted to them where it is,
+    /// without asking for it again.
     /// </summary>
     [RelayCommand]
     public void SetUnits(UnitsUiModel chosen)
@@ -111,7 +117,10 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
             // one carries on with the new.
         }
 
-        _ = LoadAsync();
+        if (_forecast is not null)
+        {
+            Forecast = ForecastUiModel.From(_forecast, units);
+        }
     }
 
     /// <summary>Asks for the selected place's forecast again, after a failure.</summary>
@@ -133,7 +142,6 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
             return;
         }
 
-        Units units = _units;
         StopLoading();
         CancellationTokenSource loading = new();
         _loading = loading;
@@ -141,11 +149,11 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
 
         try
         {
-            Forecast forecast = await _getForecast.InvokeAsync(place, units, loading.Token);
+            Forecast forecast = await _getForecast.InvokeAsync(place, loading.Token);
             // A repository may answer although it was told to stop.
             if (!loading.IsCancellationRequested)
             {
-                Show(Place, ForecastUiModel.From(forecast, units), isLoading: false, failureMessage: null);
+                Show(Place, forecast, isLoading: false, failureMessage: null);
             }
         }
         catch (OperationCanceledException)
@@ -165,10 +173,12 @@ public sealed partial class HomeViewModel : ObservableObject, IDisposable
         _loading = null;
     }
 
-    private void Show(PlaceUiModel? place, ForecastUiModel? forecast, bool isLoading, string? failureMessage)
+    /// <param name="forecast">In metric units; it is shown in the units chosen now.</param>
+    private void Show(PlaceUiModel? place, Forecast? forecast, bool isLoading, string? failureMessage)
     {
+        _forecast = forecast;
         Place = place;
-        Forecast = forecast;
+        Forecast = forecast is null ? null : ForecastUiModel.From(forecast, _units);
         IsLoading = isLoading;
         FailureMessage = failureMessage;
     }

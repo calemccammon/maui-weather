@@ -14,9 +14,15 @@ public sealed record ForecastUiModel(CurrentUiModel Current, IReadOnlyList<DayUi
 {
     public bool HasDays => Days.Count > 0;
 
-    /// <summary>Translates a domain <see cref="Forecast"/> for display in <paramref name="units"/>.</summary>
-    public static ForecastUiModel From(Forecast forecast, Units units)
+    /// <summary>
+    /// Translates a metric domain <see cref="Forecast"/> for display in
+    /// <paramref name="units"/>, converting it before anything is rounded.
+    /// </summary>
+    public static ForecastUiModel From(Forecast metric, Units units)
     {
+        ArgumentNullException.ThrowIfNull(metric);
+        Forecast forecast = metric.InUnits(units);
+
         // The whole week's range, so each day's bar shows where it sits in it.
         double weekLow = forecast.Days.Count == 0 ? 0 : forecast.Days.Min(day => day.Low);
         double weekHigh = forecast.Days.Count == 0 ? 0 : forecast.Days.Max(day => day.High);
